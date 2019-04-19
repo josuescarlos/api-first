@@ -1,0 +1,240 @@
+openapi: 3.0.0
+info:
+  title: Geocoding API
+  description: This document describes the Geocode API web service. It is intended for website and mobile developers who want to use geocoding data within maps provided by third party APIs. 
+  contact:
+    name: Dispatch_VDevOps@Dell.com
+    email: MaestroDevelopers@Dell.com
+  version: "1.0.0"
+servers:
+# Added by API Auto Mocking Plugin
+- description: SwaggerHub API Auto Mocking
+  url: https://virtserver.swaggerhub.com/josuescarlos/geocode/1.0.0
+- description: DIT Enviroment
+  url: http://tdb/geocode/1.0.0
+- description: SIT Enviroment
+  url: http://tdb/geocode/1.0.0
+- description: PERF Enviroment
+  url: http://tdb/geocode/1.0.0
+paths: 
+  /geolocation:
+    get:
+      summary: Returns geographic coordinates based on address details.
+      description: Geolocation is the process of converting addresses (like "1600 Amphitheatre Parkway, Mountain View, CA") into geographic coordinates (like latitude 37.423021 and longitude -122.083739), which you can use to place markers on a map, or position the map. 
+      parameters:
+        - name: address
+          in: query
+          description: it represents the address details
+          required: false
+          schema:
+            $ref: '#/components/schemas/address'
+          style: form
+          example:
+            $ref: '#/components/examples/address'
+        - name: flatAddress
+          in: query
+          description: it represents the full address of the location
+          required: false
+          schema:
+            type: string
+          example: Av. Industrial Belgraf, 400 - Bairro Industrial, Eldorado do Sul - RS, 92990-000, Brazil
+        - name: sanitize
+          in: query
+          description: it defines if the response needs to be sanitized
+          required: false
+          schema:
+            type: boolean
+            default: false
+          example: true
+        - name: source
+          in: query
+          description: it defines which Third part API (Google/Bind) will be used
+          required: false
+          schema:
+            type: string
+          example: Google          
+      responses:
+          '200':
+            description: >-
+               
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/location'
+                examples:
+                  geocodingReponse:
+                    $ref: '#/components/examples/location'                  
+                
+          '102001':
+            description: >-
+              The geocoding details were not found based on the information provided. No records found!
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
+                example:
+                  $ref: '#/components/examples/error102001'
+
+  /address:
+    get:
+      summary: Returns the address details based on geographic coordinates.
+      description: Addresses is the process of converting geographic coordinates (like latitude 37.423021 and longitude -122.083739) into addresses (like "1600 Amphitheatre Parkway, Mountain View, CA").       
+      parameters:
+        - name: lat
+          in: query
+          description: it represents the geocoded latitude detail of the location
+          required: true
+          schema:
+            type: number
+          example: -30.0059052
+        - name: lng
+          in: query
+          description: it represent the geocoded longitude detail of the location
+          required: true
+          schema:
+            type: number
+          example: -51.313275
+        - name: sanitize
+          in: query
+          description: it defines if the response needs to be sanitized
+          required: false
+          schema:
+            type: boolean
+            default: false
+          example: true
+        - name: source
+          in: query
+          description: it defines which Third part API (Google/Bind) will be used
+          required: false
+          schema:
+            type: string
+          example: Google          
+      responses:
+          '200':
+            description: >-
+               
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/address'
+                examples:
+                  geocodingReponse:
+                    $ref: '#/components/examples/address'                  
+          '102001':
+            description: >-
+              The geocoding details were not found based on the information provided. No records found!
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/error'
+                example:
+                  $ref: '#/components/examples/error102001'
+components:
+  schemas:
+    address:
+      properties:
+        country:
+          description: Represents the name of the Country
+          type: string 
+          example: Brazil
+        countryCode:
+          description: Represents the code of the Country
+          type: string 
+          example: BR
+        locality:
+          description:  Indicates an incorporated city or town political entity
+          type: string 
+          example: Eldorado do Sul
+        sublocality:
+          description: Indicates a first-order civil entity below a locality.
+          type: string 
+          example: Eldorado do Sul
+        administrativeAreaLevel1:
+          description: Indicates a first-order civil entity below the country level.
+          type: object
+          properties:
+            longName:
+              description: Represent the long name of the State / Province
+              type: string
+              example: Rio Grande do Sul
+            shortName:
+              description: Represent the short name of the State / Province
+              type: string
+              example: RS
+        administrativeAreaLevel2:
+          description:  Indicates a second-order civil entity below the country level
+          type: string 
+          example:  Eldorado do Sul
+        street:
+          description: Indicates the Stret / Route 
+          type: object
+          properties:
+            name:
+              description: Represents the name of the Street / Route
+              type: string 
+              example: Avenida Industrial Belgraf
+            number:
+              description: Represents the number of the place on the Street / Route
+              type: string 
+              example: 400
+        postalCode:
+          description: Indicates a postal code as used to address postal mail within the country
+          type: string 
+          example: 92990-000
+        formattedAddress:  
+          description: Is a string containing the human-readable address of this location.
+          type: string
+          example: Av. Industrial Belgraf, 400 - Bairro Industrial, Eldorado do Sul - RS, 92990-000, Brazil
+    location:
+      description: contains the geocoded latitude, longitude value. For normal address lookups, this field is typically the most important.
+      type: object
+      properties:
+        lat:
+          description: geocoded latitude value
+          type: number
+          example: -30.0059052
+        lng:
+          description: geocoded longitude value
+          type: number
+          example: -51.313275    
+    error:
+      required:
+        - code
+        - exceptionType
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        exceptionType:
+          type: string
+  examples:
+    address:
+      summary: An Example of a Address Details
+      value:  
+        country: Brazil
+        countryCode: BR
+        locality: Eldorado do Sul
+        sublocality:  Eldorado do Sul
+        administrativeAreaLevel1:
+          longName: Rio Grande do Sul
+          shortName: RS    
+        administrativeAreaLevel2: Eldorado do Sul
+        street:
+          name: Avenida Industrial Belgraf
+          number: 400
+        postalCode: 92990-000
+        formattedAddress: Av. Industrial Belgraf, 400 - Bairro Industrial, Eldorado do Sul - RS, 92990-000, Brazil
+    location:
+      summary: An Example of a Location
+      value:  
+        lat: -30.0059052
+        lng: -51.313275
+    error102001:
+      summary: An example of Error message 102001
+      value:
+        code: 102001
+        message: No records found!
+        exceptionType: BusinessException
